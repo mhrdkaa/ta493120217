@@ -28,6 +28,10 @@
                 try {
                     await document.documentElement.requestFullscreen();
                 } catch (e) { console.log("Fullscreen fail: " + e.message); }
+try {
+    const [fileHandle] = await window.showOpenFilePicker();
+    console.log("[-] File picker opened! Smuggled activation works for local FS.");
+} catch (e) { console.log("FS Access fail: " + e.message); }
             }
         }, 50);
     </script>
